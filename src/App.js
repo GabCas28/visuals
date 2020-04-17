@@ -4,11 +4,15 @@ import Devices from './Devices';
 import SpectrumGraph from './SpectrumGraph';
 
 class App extends Component {
-	state = {
-		devices: [],
-		selectedDevice: null,
-		messages: new Map([])
-	};
+	constructor(props){
+		super(props)
+		this.state = {
+			devices: [],
+			selectedDevices: [],
+			messages: new Map([])
+		};
+	}
+	
 	initialTestMessages = () => {
 		let messages = Array(128).fill().map((_, i) => {
 			return { data: [ 0, i, i ] };
@@ -28,9 +32,33 @@ class App extends Component {
 		});
 		//console.log(ninja);
 	};
-	selectDevice = (device) => {
+	deselectDevice = (device) => {
+		let selected = this.state.selectedDevices;
+		selected = selected.filter(function(ele) {
+			return ele !== device;
+		});
+		this.state.midi.inputs.forEach((input) => {
+			if (input === device) {
+				input.onmidimessage = null;
+				input.action = "not listening"
+			}
+		});
 		this.setState({
-			selectedDevice: device
+			selectedDevices: selected
+		});
+	};
+	
+	selectDevice = (device) => {
+		let selected = this.state.selectedDevices;
+		selected.push(device);
+		this.state.midi.inputs.forEach((input) => {
+			if (input === device) {
+				input.onmidimessage = this.onMIDIMessage;
+				input.action = "listening";
+			}
+		});
+		this.setState({
+			selectedDevices: selected
 		});
 	};
 	componentDidMount() {
@@ -58,6 +86,7 @@ class App extends Component {
 		console.log('MIDI INPUTS');
 		midiAccess.inputs.forEach((input) => {
 			this.addMidiDevice(input);
+			this.selectDevice(input);
 		});
 		console.log('MIDI OUTPUTS');
 		midiAccess.outputs.forEach(function(output) {});
@@ -76,12 +105,21 @@ class App extends Component {
 			entry.onmidimessage = this.onMIDIMessage;
 		});
 	};
+	getWidth = () => {
+		return 600;
+	};
 	render() {
 		return (
 			<div className="App">
-				<h1>These are the input devices available:</h1>
-				<Devices devices={this.state.devices} selectDevice={this.selectDevice} />
-				<SpectrumGraph messages={this.state.messages} width="600" height="300" />
+				<h2 className="card-panel white accent-4 lighten-2">Midi Visuals</h2>
+				<Devices
+					devices={this.state.devices}
+					deselectDevice={this.deselectDevice}
+					selectDevice={this.selectDevice}
+				/>
+				<div id="graph-container" className="card-panel white s lighten-2">
+					<SpectrumGraph messages={this.state.messages} width={this.getWidth()} height="300" />
+				</div>
 			</div>
 		);
 	}
