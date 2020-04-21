@@ -56,10 +56,10 @@ function PieGraph(props) {
 	const pie = d3.pie().sort(null).value((e) => {
 		return getValue(e);
 	});
-	console.log('data', data);
-	console.log('pie', pie(data));
+	//console.log('data', data);
+	//console.log('pie', pie(data));
 	const arcPath = d3.arc().innerRadius(0).outerRadius((e) => {
-		console.log('ro', e);
+		//console.log('ro', e);
 		return ro(e.value);
 	});
 	const paths = svg.selectAll('path').data(pie(data));
@@ -69,7 +69,7 @@ function PieGraph(props) {
 		.attr('class', 'arc')
 		.attr('fill', (d) => color(getMidi(d.data)))
 		.attr('d', (d) => {
-			console.log('d', d);
+			//console.log('d', d);
 			// console.log('data', d.data);
 			return arcPath(d);
 		})
