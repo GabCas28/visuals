@@ -24,18 +24,25 @@ function getMidi(message) {
 }
 
 function SpectrumGraph(props) {
+	const maxX = 12;
+	const maxY = 127;
+
+
 	let div = new ReactFauxDOM.Element('div');
-	let data = Array.from(props.messages);
+
+	let data = Array.from(props.messages).filter((e) => getMidi(e) < maxX);
+	
+	const color = d3.scaleOrdinal(d3['schemeSet1']);
+	color.domain(data.map(d=> getMidi(d)));
+
 	let margin = { top: 20, right: 20, bottom: 30, left: 40 },
-		graphWidth = useWindowWidth() -50 - margin.left - margin.right,
+		graphWidth = useWindowWidth() - 50 - margin.left - margin.right,
 		graphHeight = props.height - margin.top - margin.bottom;
 
 	let x = d3.scaleLinear().range([ 0, graphWidth ]);
-
 	let y = d3.scaleLinear().range([ graphHeight, 0 ]);
 
 	let xAxis = d3.axisBottom().scale(x);
-
 	let yAxis = d3.axisLeft().scale(y).ticks(10);
 
 	//Pass it to d3.select and proceed as normal
@@ -47,8 +54,8 @@ function SpectrumGraph(props) {
 		.append('g')
 		.attr('transform', `translate(${margin.left},${margin.top})`);
 
-	x.domain([ 0, 127 ]);
-	y.domain([ 0, 127 ]);
+	x.domain([ 0, maxX ]);
+	y.domain([ 0, maxY ]);
 
 	svg.append('g').attr('class', 'x axis').attr('transform', `translate(0,${graphHeight})`).call(xAxis);
 
@@ -69,8 +76,9 @@ function SpectrumGraph(props) {
 		.enter()
 		.append('rect')
 		.attr('class', 'bar')
+		.attr('fill', (d) => color(getMidi(d)))
 		.attr('x', (d) => x(getMidi(d)))
-		.attr('width', graphWidth / 127)
+		.attr('width', graphWidth / maxX)
 		.attr('y', (d) => y(getValue(d)))
 		.attr('value', getValue)
 		.attr('height', (d) => graphHeight - y(getValue(d)));

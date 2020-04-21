@@ -2,21 +2,23 @@ import React, { Component } from 'react';
 import './App.css';
 import Devices from './Devices';
 import SpectrumGraph from './SpectrumGraph';
+import PieGraph from './PieGraph';
+import PieGraph2 from './PieGraph2';
 
 class App extends Component {
-	constructor(props){
-		super(props)
+	constructor(props) {
+		super(props);
 		this.state = {
 			devices: [],
 			selectedDevices: [],
 			messages: new Map([])
 		};
 	}
-	
+
 	initialTestMessages = () => {
-		let messages = Array(128).fill().map((_, i) => {
-			return { data: [ 0, i, i ] };
-		});
+		let messages = new Map(Array(128).fill().map((_, i) => {
+			return [ i, i ] ;
+		}));
 		this.setState({
 			messages: messages
 		});
@@ -40,21 +42,21 @@ class App extends Component {
 		this.state.midi.inputs.forEach((input) => {
 			if (input === device) {
 				input.onmidimessage = null;
-				input.action = "not listening"
+				input.action = 'not listening';
 			}
 		});
 		this.setState({
 			selectedDevices: selected
 		});
 	};
-	
+
 	selectDevice = (device) => {
 		let selected = this.state.selectedDevices;
 		selected.push(device);
 		this.state.midi.inputs.forEach((input) => {
 			if (input === device) {
 				input.onmidimessage = this.onMIDIMessage;
-				input.action = "listening";
+				input.action = 'listening';
 			}
 		});
 		this.setState({
@@ -105,9 +107,6 @@ class App extends Component {
 			entry.onmidimessage = this.onMIDIMessage;
 		});
 	};
-	getWidth = () => {
-		return 600;
-	};
 	render() {
 		return (
 			<div className="App">
@@ -118,7 +117,13 @@ class App extends Component {
 					selectDevice={this.selectDevice}
 				/>
 				<div id="graph-container" className="card-panel white s lighten-2">
-					<SpectrumGraph messages={this.state.messages} width={this.getWidth()} height="300" />
+					<SpectrumGraph messages={this.state.messages}  height="400" />
+				</div>
+				<div id="graph-container" className="card-panel white s lighten-2 row">
+					<PieGraph messages={this.state.messages}  width="400" height="400" />
+				</div>	
+				<div id="graph-container" className="card-panel white s lighten-2 row">
+					<PieGraph2 messages={this.state.messages}  width="400" height="400" />
 				</div>
 			</div>
 		);

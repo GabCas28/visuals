@@ -2,13 +2,13 @@ import React from 'react';
 import './Devices.css';
 //function devices(props){
 function Devices({ devices, deselectDevice, selectDevice }) {
-	function handleClick(e,device){
+	function handleClick(e, device) {
 		if (e.target.innerHTML === 'Mute') {
-			e.target.classList.toggle("green");
+			e.target.classList.toggle('green');
 			e.target.innerHTML = 'Listen';
 			deselectDevice(device);
 		} else if (e.target.innerHTML === 'Listen') {
-			e.target.classList.toggle("green");
+			e.target.classList.toggle('green');
 			e.target.innerHTML = 'Mute';
 			selectDevice(device);
 		}
