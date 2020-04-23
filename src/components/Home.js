@@ -1,25 +1,11 @@
-import React, { Component, useState, useEffect } from 'react';
-import './App.css';
-import Home from './components/Home';
-import SpectrumGraph from './components/SpectrumGraph';
-import PieGraph from './components/PieGraph';
-import Navbar from './components/Navbar';
-import { BrowserRouter, Route } from 'react-router-dom';
-import PieGraph2 from './components/PieGraph2';
+import React, { Component } from 'react';
+import './Home.css';
+import Devices from './Devices';
+import SpectrumGraph from './SpectrumGraph';
+import PieGraph from './PieGraph';
+import PieGraph2 from './PieGraph2';
 
-function useWindowWidth() {
-	const [ width, setWidth ] = useState(window.innerWidth);
-
-	useEffect(() => {
-		const handleResize = () => setWidth(window.innerWidth);
-		window.addEventListener('resize', handleResize);
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
-	});
-	return width;
-}
-class App extends Component {
+class Home extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -123,54 +109,31 @@ class App extends Component {
 			entry.onmidimessage = this.onMIDIMessage;
 		});
 	};
-	routes = [ { path: '/', component: 'Home' } ];
 	render() {
 		return (
-			<BrowserRouter>
-				<div className="App">
-					<Navbar />
-					{/* Exact attribute to match the precise url */}
-					<Route exact path="/" component={Home} />
-					<Route
-						exact
-						path="/doghnut"
-						render={(props) => (
-							<PieGraph
-								{...props}
-								messages={this.state.messages}
-								width={window.innerWidth}
-								height={window.innerHeight - 100}
-							/>
-						)}
-					/>
-					<Route
-						exact
-						path="/pie"
-						render={(props) => (
-							<PieGraph2
-								{...props}
-								messages={this.state.messages}
-								width={window.innerWidth}
-								height={window.innerHeight - 100}
-							/>
-						)}
-					/>
-					<Route
-						exact
-						path="/bar"
-						render={(props) => (
-							<SpectrumGraph
-								{...props}
-								messages={this.state.messages}
-								width={window.innerWidth}
-								height={window.innerHeight - 100}
-							/>
-						)}
-					/>
+			<div className="App">
+				<Devices
+					devices={this.state.devices}
+					deselectDevice={this.deselectDevice}
+					selectDevice={this.selectDevice}
+				/>
+
+				<div id="graph-container" className="card-panel black lighten-2 row">
+					<div className="col s12 m5">
+						<SpectrumGraph messages={this.state.messages} width="600" height="400" />
+					</div>
+					<div className="col s12 m7">
+						<div className="col s12 m6">
+							<PieGraph messages={this.state.messages} width="400" height="370" />
+						</div>
+						<div className="col s12 m6">
+							<PieGraph2 messages={this.state.messages} width="400" height="370" />
+						</div>
+					</div>
 				</div>
-			</BrowserRouter>
+			</div>
 		);
 	}
 }
 
-export default App;
+export default Home;

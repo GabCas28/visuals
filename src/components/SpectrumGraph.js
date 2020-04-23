@@ -1,20 +1,6 @@
-import { useState, useEffect } from 'react';
 import ReactFauxDOM from 'react-faux-dom';
 import './SpectrumGraph.css';
 import * as d3 from 'd3';
-
-function useWindowWidth() {
-	const [ width, setWidth ] = useState(window.innerWidth);
-
-	useEffect(() => {
-		const handleResize = () => setWidth(window.innerWidth);
-		window.addEventListener('resize', handleResize);
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
-	});
-	return width;
-}
 
 function getValue(message) {
 	return parseInt(message[1]);
@@ -27,48 +13,46 @@ function SpectrumGraph(props) {
 	const maxX = 12;
 	const maxY = 127;
 
-
 	let div = new ReactFauxDOM.Element('div');
 
 	let data = Array.from(props.messages).filter((e) => getMidi(e) < maxX);
-	
-	const color = d3.scaleOrdinal(d3['schemeSet1']);
-	color.domain(data.map(d=> getMidi(d)));
 
-	let margin = { top: 20, right: 20, bottom: 30, left: 40 },
-		graphWidth = useWindowWidth() - 50 - margin.left - margin.right,
+	const color = d3.scaleOrdinal(d3['schemeSet3']);
+	color.domain(data.map((d) => getMidi(d)));
+
+	let margin = { top: 20, right: 40, bottom: 30, left: 40 },
+		graphWidth = props.width - margin.left - margin.right,
 		graphHeight = props.height - margin.top - margin.bottom;
 
 	let x = d3.scaleLinear().range([ 0, graphWidth ]);
 	let y = d3.scaleLinear().range([ graphHeight, 0 ]);
 
-	let xAxis = d3.axisBottom().scale(x);
-	let yAxis = d3.axisLeft().scale(y).ticks(10);
+	let labels = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
+	let xAxis = d3.axisBottom().scale(x).tickFormat((d) => labels[d]);
+	// let yAxis = d3.axisLeft().scale(y).ticks(4);
 
 	//Pass it to d3.select and proceed as normal
 	let svg = d3
 		.select(div)
 		.append('svg')
-		.attr('width', graphWidth + margin.left + margin.right)
-		.attr('height', graphHeight + margin.top + margin.bottom)
+		.attr('preserveAspectRatio', 'xMinYMin meet')
+		.attr('viewBox', '0 0 ' + props.width + ' ' + props.height)
+		// .attr('width', graphWidth + margin.left + margin.right)
+		// .attr('height', graphHeight + margin.top + margin.bottom)
 		.append('g')
 		.attr('transform', `translate(${margin.left},${margin.top})`);
 
 	x.domain([ 0, maxX ]);
 	y.domain([ 0, maxY ]);
-
-	svg.append('g').attr('class', 'x axis').attr('transform', `translate(0,${graphHeight})`).call(xAxis);
-
-	svg
+	let xAxisRepr = svg
 		.append('g')
-		.attr('class', 'y axis')
-		.call(yAxis)
-		.append('text')
-		.attr('transform', 'rotate(-90)')
-		.attr('y', 10)
-		.attr('dy', '.71em')
-		.style('text-anchor', 'end')
-		.text('Frequency');
+		.attr('class', 'x axis')
+		.attr('transform', `translate(${graphHeight / 20},${graphHeight})`)
+		.call(xAxis);
+
+	xAxisRepr.selectAll("text").attr("fill",(d)=>color(d)).attr("stroke",(d)=>color(d));
+
+	// svg.append('g').attr('class', 'y axis').call(yAxis);
 
 	svg
 		.selectAll('.bar')

@@ -1,0 +1,10 @@
+.axis line,
+.axis path {
+    fill: none;
+    stroke: none;
+}
+
+.axis text {
+    font-size: 19px;
+    color: white;
+}

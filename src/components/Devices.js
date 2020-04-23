@@ -15,15 +15,15 @@ function Devices({ devices, deselectDevice, selectDevice }) {
 	}
 	const deviceList = devices.map((device) => {
 		return (
-			<li className="collection-item row" key={device.id}>
-				<div className="col s3">Name: {device.name}</div>
+			<li className="collection-item grey-text black row" key={device.id}>
+				<div className="col s2">Device Name: {device.name}</div>
 				<div className="col s3">Manufacturer: {device.manufacturer} </div>
-				<div className="col s2">Type: {device.type}</div>
-				<div className="col s2">
+				<div className="col s1">Type: {device.type}</div>
+				<div className="col s3">
 					State: {device.state}, {device.action}
 				</div>
 				<button
-					className="devices btn purple lighten-4"
+					className="col offset-s2 s1 devices btn purple lighten-4"
 					onClick={(e) => {
 						handleClick(e, device);
 					}}
