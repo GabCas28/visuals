@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, NavLink, withRouter } from 'react-router-dom';
+import Chromas from './Chromas';
 function Navbar(props) {
 	// setTimeout(()=>{
 	//     props.history.push('/about')
@@ -20,10 +21,13 @@ function Navbar(props) {
 						<NavLink to="/bar">Bar Chart</NavLink>
 					</li>
 					<li>
-						<NavLink to="/doghnut">Dohnut Chart</NavLink>
+						<NavLink to="/doughnut">Doughnut Chart</NavLink>
 					</li>
 					<li>
 						<NavLink to="/pie">Pie Chart</NavLink>
+					</li>
+					<li>
+						<Chromas selectChromas={props.selectChromas}/>
 					</li>
 				</ul>
 			</div>

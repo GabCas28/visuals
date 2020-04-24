@@ -10,7 +10,7 @@ function getMidi(message) {
 }
 
 function SpectrumGraph(props) {
-	const maxX = 12;
+	const maxX = props.n_notes;
 	const maxY = 127;
 
 	let div = new ReactFauxDOM.Element('div');
@@ -28,7 +28,7 @@ function SpectrumGraph(props) {
 	let y = d3.scaleLinear().range([ graphHeight, 0 ]);
 
 	let labels = [ 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B' ];
-	let xAxis = d3.axisBottom().scale(x).tickFormat((d) => labels[d]);
+	let xAxis = d3.axisBottom().scale(x).tickFormat((d) => labels[d%12]).ticks(maxX);
 	// let yAxis = d3.axisLeft().scale(y).ticks(4);
 
 	//Pass it to d3.select and proceed as normal

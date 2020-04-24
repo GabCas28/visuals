@@ -2,6 +2,7 @@ import ReactFauxDOM from 'react-faux-dom';
 import './SpectrumGraph.css';
 import * as d3 from 'd3';
 
+
 function getValue(message) {
 	return parseInt(message[1]);
 }
@@ -10,7 +11,7 @@ function getMidi(message) {
 }
 
 function PieGraph(props) {
-	const maxX = 12;
+	const maxX = props.n_notes;
 	const maxY = 127;
 	let div = new ReactFauxDOM.Element('div');
 
@@ -25,22 +26,24 @@ function PieGraph(props) {
 
 	const cent = { x: graphWidth / 2 + 5, y: graphHeight / 2 + 5 };
 
-	let ro = d3.scaleLinear().range([ 0, (graphWidth / 2)-50 ]);
+	let ro = d3.scaleLinear().range([ 0, graphWidth / 2 ]);
 	let y = d3.scaleLinear().range([ graphHeight, 0 ]);
 
 	ro.domain([ 0, Math.min(cent.x, cent.y) ]);
 	y.domain([ 0, maxY ]);
 
 	let svg = d3
-		.select(div)   
+		.select(div)
 		.append('svg')
 		.attr("preserveAspectRatio", "xMinYMin meet")
 		.attr("viewBox", "0 0 "+graphWidth+" "+graphHeight)
+		// .attr('width', graphWidth + margin.left + margin.right)
+		// .attr('height', graphHeight + margin.top + margin.bottom)
 		.append('g')
 		.attr('transform', `translate(${cent.x},${cent.y})`);
 
-	const pie = d3.pie().sort(null).value((e) => getValue(e));
-	const arcPath = d3.arc().innerRadius(50).outerRadius((e) => 50+ro(e.value));
+	const pie = d3.pie().sort(null).value((e) => 12);
+	const arcPath = d3.arc().innerRadius(0).outerRadius((e) => ro(getValue(e.data)));
 	const paths = svg.selectAll('path').data(pie(data));
 	paths
 		.enter()

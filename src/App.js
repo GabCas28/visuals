@@ -1,28 +1,17 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import './App.css';
 import Home from './components/Home';
 import SpectrumGraph from './components/SpectrumGraph';
-import PieGraph from './components/PieGraph';
+import DoughnutGraph from './components/DoughnutGraph';
 import Navbar from './components/Navbar';
-import { BrowserRouter, Route } from 'react-router-dom';
-import PieGraph2 from './components/PieGraph2';
+import { HashRouter, Route } from 'react-router-dom';
+import PieGraph from './components/PieGraph';
 
-function useWindowWidth() {
-	const [ width, setWidth ] = useState(window.innerWidth);
-
-	useEffect(() => {
-		const handleResize = () => setWidth(window.innerWidth);
-		window.addEventListener('resize', handleResize);
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
-	});
-	return width;
-}
 class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			n_notes: 12,
 			devices: [],
 			selectedDevices: [],
 			messages: new Map([])
@@ -124,19 +113,25 @@ class App extends Component {
 		});
 	};
 	routes = [ { path: '/', component: 'Home' } ];
+	selectChromas = (n_notes) => {
+		this.setState({
+			n_notes: n_notes,
+		});
+	};
 	render() {
 		return (
-			<BrowserRouter>
+			<HashRouter>
 				<div className="App">
-					<Navbar />
+					<Navbar selectChromas={this.selectChromas} />
 					{/* Exact attribute to match the precise url */}
-					<Route exact path="/" component={Home} />
+					<Route exact path="/" render={(props) => <Home {...props} n_notes={this.state.n_notes} />} />
 					<Route
 						exact
-						path="/doghnut"
+						path="/doughnut"
 						render={(props) => (
-							<PieGraph
+							<DoughnutGraph
 								{...props}
+								n_notes={this.state.n_notes}
 								messages={this.state.messages}
 								width={window.innerWidth}
 								height={window.innerHeight - 100}
@@ -147,8 +142,9 @@ class App extends Component {
 						exact
 						path="/pie"
 						render={(props) => (
-							<PieGraph2
+							<PieGraph
 								{...props}
+								n_notes={this.state.n_notes}
 								messages={this.state.messages}
 								width={window.innerWidth}
 								height={window.innerHeight - 100}
@@ -161,6 +157,7 @@ class App extends Component {
 						render={(props) => (
 							<SpectrumGraph
 								{...props}
+								n_notes={this.state.n_notes}
 								messages={this.state.messages}
 								width={window.innerWidth}
 								height={window.innerHeight - 100}
@@ -168,7 +165,7 @@ class App extends Component {
 						)}
 					/>
 				</div>
-			</BrowserRouter>
+			</HashRouter>
 		);
 	}
 }

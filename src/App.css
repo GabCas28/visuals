@@ -29,3 +29,8 @@ body {
 .btn {
     color: #101214;
 }
+
+select {
+    display: inline-block;
+    margin: 10%;
+}

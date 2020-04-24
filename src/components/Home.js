@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import './Home.css';
 import Devices from './Devices';
 import SpectrumGraph from './SpectrumGraph';
+import DoughnutGraph from './DoughnutGraph';
 import PieGraph from './PieGraph';
-import PieGraph2 from './PieGraph2';
 
 class Home extends Component {
 	constructor(props) {
@@ -120,14 +120,29 @@ class Home extends Component {
 
 				<div id="graph-container" className="card-panel black lighten-2 row">
 					<div className="col s12 m5">
-						<SpectrumGraph messages={this.state.messages} width="600" height="400" />
+						<SpectrumGraph
+							n_notes={this.props.n_notes}
+							messages={this.state.messages}
+							width="600"
+							height="400"
+						/>
 					</div>
 					<div className="col s12 m7">
 						<div className="col s12 m6">
-							<PieGraph messages={this.state.messages} width="400" height="370" />
+							<DoughnutGraph
+								n_notes={this.props.n_notes}
+								messages={this.state.messages}
+								width="400"
+								height="370"
+							/>
 						</div>
 						<div className="col s12 m6">
-							<PieGraph2 messages={this.state.messages} width="400" height="370" />
+							<PieGraph
+								n_notes={this.props.n_notes}
+								messages={this.state.messages}
+								width="400"
+								height="370"
+							/>
 						</div>
 					</div>
 				</div>
