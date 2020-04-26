@@ -6,6 +6,7 @@ import DoughnutGraph from './components/DoughnutGraph';
 import Navbar from './components/Navbar';
 import { HashRouter, Route } from 'react-router-dom';
 import PieGraph from './components/PieGraph';
+import Devices from './components/Devices';
 
 class App extends Component {
 	constructor(props) {
@@ -14,11 +15,25 @@ class App extends Component {
 			n_notes: 12,
 			devices: [],
 			selectedDevices: [],
-			messages: new Map([])
+			messages: new Map([]),
+			test: false,
+			mounted: false
 		};
 	}
-
-	initialTestMessages = () => {
+	testMessages = () => {
+		if (this.state.test === false) {
+			let messages = new Map(
+				Array(120).fill().map((_, i) => {
+					return [ i, i * (127 / this.state.n_notes) ];
+				})
+			);
+			this.setState({
+				messages: messages,
+				test: true
+			});
+		}
+	};
+	initialMessages = () => {
 		let messages = new Map(
 			Array(128).fill().map((_, i) => {
 				return [ i, 0 ];
@@ -37,7 +52,6 @@ class App extends Component {
 		this.setState({
 			devices: devices
 		});
-		//console.log(ninja);
 	};
 	deselectDevice = (device) => {
 		let selected = this.state.selectedDevices;
@@ -69,16 +83,16 @@ class App extends Component {
 		});
 	};
 	componentDidMount() {
-		this.initialTestMessages();
+		this.initialMessages();
 		navigator.requestMIDIAccess({ sysex: true }).then(this.onMIDISuccess, this.onMIDIFailure);
 	}
 	//componentDidUpdate(prevProps, prevState) {}
 	onMIDISuccess = (midiAccess) => {
 		console.log('MIDI ready!');
-		console.log(midiAccess);
-
+		// console.log(midiAccess);
 		this.setState({
-			midi: midiAccess
+			midi: midiAccess,
+			mounted: true
 		});
 		// midi = midiAccess;  // store in the global (in real usage, would probably keep in an object instance)
 		this.listInputsAndOutputs(midiAccess);
@@ -90,13 +104,13 @@ class App extends Component {
 	};
 
 	listInputsAndOutputs = (midiAccess) => {
-		console.log('MIDI INPUTS');
+		//'MIDI INPUTS'
 		midiAccess.inputs.forEach((input) => {
 			this.addMidiDevice(input);
 			this.selectDevice(input);
 		});
-		console.log('MIDI OUTPUTS');
-		midiAccess.outputs.forEach(function(output) {});
+		//'MIDI OUTPUTS'
+		//midiAccess.outputs.forEach(function(output) {});
 	};
 
 	onMIDIMessage = (event) => {
@@ -116,6 +130,7 @@ class App extends Component {
 	selectChromas = (n_notes) => {
 		this.setState({
 			n_notes: n_notes,
+			test: false
 		});
 	};
 	render() {
@@ -123,8 +138,32 @@ class App extends Component {
 			<HashRouter>
 				<div className="App">
 					<Navbar selectChromas={this.selectChromas} />
+					<div className="">
+						<Devices
+							mounted={this.state.mounted}
+							devices={this.state.devices}
+							deselectDevice={this.deselectDevice}
+							selectDevice={this.selectDevice}
+							testMessages={this.testMessages}
+						/>
+					</div>
 					{/* Exact attribute to match the precise url */}
-					<Route exact path="/" render={(props) => <Home {...props} n_notes={this.state.n_notes} />} />
+					<Route
+						exact
+						path="/"
+						render={(props) => (
+							<Home
+								{...props}
+								mounted={this.state.mounted}
+								devices={this.state.devices}
+								selectDevice={this.selectDevice}
+								deselectDevice={this.deselectDevice}
+								messages={this.state.messages}
+								n_notes={this.state.n_notes}
+								testMessages={this.testMessages}
+							/>
+						)}
+					/>
 					<Route
 						exact
 						path="/doughnut"
