@@ -27,6 +27,9 @@ function Navbar(props) {
 						<NavLink to="/pie">Pie Chart</NavLink>
 					</li>
 					<li>
+						<NavLink to="/mario">Mario</NavLink>
+					</li>
+					<li>
 						<Chromas selectChromas={props.selectChromas}/>
 					</li>
 				</ul>

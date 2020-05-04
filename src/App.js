@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 import { HashRouter, Route } from 'react-router-dom';
 import PieGraph from './components/PieGraph';
 import Devices from './components/Devices';
+import Mario from './components/Mario';
 
 class App extends Component {
 	constructor(props) {
@@ -116,9 +117,17 @@ class App extends Component {
 	onMIDIMessage = (event) => {
 		let messages = this.state.messages;
 		messages.set(event.data[1], event.data[2]);
-		this.setState({
-			messages: messages
-		});
+		if (event.data[2] === 0) {
+			setTimeout(() => {
+				this.setState({
+					messages: messages
+				});
+			}, 300);
+		} else {
+			this.setState({
+				messages: messages
+			});
+		}
 	};
 
 	startLoggingMIDIInput = (midiAccess) => {
@@ -195,6 +204,19 @@ class App extends Component {
 						path="/bar"
 						render={(props) => (
 							<SpectrumGraph
+								{...props}
+								n_notes={this.state.n_notes}
+								messages={this.state.messages}
+								width={window.innerWidth}
+								height={window.innerHeight - 100}
+							/>
+						)}
+					/>
+					<Route
+						exact
+						path="/mario"
+						render={(props) => (
+							<Mario
 								{...props}
 								n_notes={this.state.n_notes}
 								messages={this.state.messages}
