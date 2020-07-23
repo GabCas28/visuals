@@ -43,13 +43,13 @@ function PieGraph(props) {
 		.attr('transform', `translate(${cent.x},${cent.y})`);
 
 	const pie = d3.pie().sort(null).value((e) => 12);
-	const arcPath = d3.arc().innerRadius(0).outerRadius((e) => ro(getValue(e.data)));
+	const arcPath = d3.arc().innerRadius(0).outerRadius((e)=>e);
 	const paths = svg.selectAll('path').data(pie(data));
 	paths
 		.enter()
 		.append('path')
 		.attr('class', 'arc')
-		.attr('fill', (d) => color(getMidi(d.data)))
+		.attr('fill', 'white')
 		.attr('d', (d) => arcPath(d))
 		.attr('stroke', 'black')
 		.attr('stroke-width', 3);
